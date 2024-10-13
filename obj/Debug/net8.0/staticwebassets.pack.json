@@ -1,0 +1,49 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\danil\\source\\repos\\BookingService\\BookingService\\wwwroot\\avatars\\1_c71fa892-d6ec-666b-73b4-3b9e3c6e5244.jpg",
+      "PackagePath": "staticwebassets\\avatars\\1_c71fa892-d6ec-666b-73b4-3b9e3c6e5244.jpg"
+    },
+    {
+      "Id": "C:\\Users\\danil\\source\\repos\\BookingService\\BookingService\\wwwroot\\avatars\\1_jkhbkj.png",
+      "PackagePath": "staticwebassets\\avatars\\1_jkhbkj.png"
+    },
+    {
+      "Id": "C:\\Users\\danil\\source\\repos\\BookingService\\BookingService\\wwwroot\\avatars\\2_c71fa892-d6ec-666b-73b4-3b9e3c6e5244.jpg",
+      "PackagePath": "staticwebassets\\avatars\\2_c71fa892-d6ec-666b-73b4-3b9e3c6e5244.jpg"
+    },
+    {
+      "Id": "C:\\Users\\danil\\source\\repos\\BookingService\\BookingService\\wwwroot\\avatars\\2_jkhbkj.png",
+      "PackagePath": "staticwebassets\\avatars\\2_jkhbkj.png"
+    },
+    {
+      "Id": "C:\\Users\\danil\\source\\repos\\BookingService\\BookingService\\wwwroot\\businessImages\\1_agustin-fernandez-Znyjl9pbaUs-unsplash.jpg",
+      "PackagePath": "staticwebassets\\businessImages\\1_agustin-fernandez-Znyjl9pbaUs-unsplash.jpg"
+    },
+    {
+      "Id": "C:\\Users\\danil\\source\\repos\\BookingService\\BookingService\\wwwroot\\businessImages\\1_chris-knight-_H1XXY96pqw-unsplash(2).jpg",
+      "PackagePath": "staticwebassets\\businessImages\\1_chris-knight-_H1XXY96pqw-unsplash(2).jpg"
+    },
+    {
+      "Id": "C:\\Users\\danil\\source\\repos\\BookingService\\BookingService\\wwwroot\\businessImages\\1_jason-leung-2seUdPQNy_I-unsplash.jpg",
+      "PackagePath": "staticwebassets\\businessImages\\1_jason-leung-2seUdPQNy_I-unsplash.jpg"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.BookingService.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.BookingService.props",
+      "PackagePath": "build\\BookingService.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.BookingService.props",
+      "PackagePath": "buildMultiTargeting\\BookingService.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.BookingService.props",
+      "PackagePath": "buildTransitive\\BookingService.props"
+    }
+  ],
+  "ElementsToRemove": []
+}
