@@ -1,19 +1,11 @@
 {
   "Version": 1,
-  "Hash": "eCtA1GWw/uCDQk0xlplTUidYIX/cHV1QlsBNF/xKces=",
+  "Hash": "Bu91jy5/P9nSJhkf2A7j7qTFsNVXE5PQp7/CAzC5GbI=",
   "Source": "BookingService",
   "BasePath": "_content/BookingService",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [
-    {
-      "Name": "BookingService\\wwwroot",
-      "Source": "BookingService",
-      "ContentRoot": "C:\\Users\\danil\\source\\repos\\BookingService\\BookingService\\wwwroot\\",
-      "BasePath": "_content/BookingService",
-      "Pattern": "**"
-    }
-  ],
+  "DiscoveryPatterns": [],
   "Assets": []
 }

@@ -1,5 +1,4 @@
-﻿using BookingService.Models;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace BookingService.DTOs
 {
