@@ -178,6 +178,7 @@ namespace BookingService.Controllers
                 var bookings = await _context.Bookings
                     .Include(b => b.Service)
                         .ThenInclude(s => s.Employee)
+                    .Where(b => b.UserId == userId)
                     .ToListAsync();
 
                 var bookingListDtos = _mapper.Map<List<BookingListDto>>(bookings);
