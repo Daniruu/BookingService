@@ -24,10 +24,12 @@ public class BusinessValidationService
             throw new ArgumentException("Nie znaleziono biznesu");
         }
 
+        /*
         if (!business.Images.Any(i => i.IsPrimary))
         {
             return false;
         }
+        */
 
         if (!business.Employees.Any())
         {
