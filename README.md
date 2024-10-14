@@ -40,7 +40,12 @@ Technologies used include .NET 8.0 for the API, JWT for secure authentication, a
 }
 ```
 
-3. **Apply migrations:** Use Entity Framework tools to update the database schema:
+3. **Apply migrations:**
+- Install Entity Framework tools:
+```bash
+dotnet tool install --global dotnet-ef
+```
+- Use Entity Framework tools to update the database schema:
 ```bash
   dotnet ef database update
 ```
