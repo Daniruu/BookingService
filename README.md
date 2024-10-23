@@ -70,3 +70,4 @@ The application uses JSON Web Tokens (JWT) for secure authentication. After logg
 - PostgreSQL
 - Entity Framework Core
 - JWT Authentication
+- Google Cloud Storage
