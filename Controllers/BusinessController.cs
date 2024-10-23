@@ -163,7 +163,7 @@ namespace BookingService.Controllers
         }
 
         [HttpGet("list")]
-        public async Task<IActionResult> GetBusinesses([FromQuery] int page = 1, [FromQuery] int limit = 10, [FromQuery] string? category = null, [FromQuery] string? location = null)
+        public async Task<IActionResult> GetBusinesses([FromQuery] int page = 1, [FromQuery] int limit = 10, [FromQuery] string? category = null, [FromQuery] string? location = null, [FromQuery] string? searchTerms = null)
         {
             try
             {
@@ -177,6 +177,11 @@ namespace BookingService.Controllers
                 if (!string.IsNullOrEmpty(location))
                 {
                     query = query.AsEnumerable().Where(b => b.Address.City.ToLowerInvariant().Contains(location.ToLowerInvariant())).AsQueryable();
+                }
+
+                if (!string.IsNullOrEmpty(searchTerms))
+                {
+                    query = query.AsEnumerable().Where(b => b.Name.ToLowerInvariant().Contains(searchTerms.ToLowerInvariant())).AsQueryable();
                 }
 
                 var totalRecords = query.Count();
