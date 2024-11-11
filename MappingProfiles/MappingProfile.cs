@@ -54,23 +54,33 @@ namespace BookingService.MappingProfiles
             CreateMap<ServiceUpdateDto, Service>();
 
             CreateMap<Booking, BookingListDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.DateTime, opt => opt.MapFrom(src => src.DateTime))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
                 .ForMember(dest => dest.ServiceName, opt => opt.MapFrom(src => src.Service.Name))
                 .ForMember(dest => dest.EmployeeName, opt => opt.MapFrom(src => src.Service.Employee.Name))
                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Service.Price))
-                .ForMember(dest => dest.Duration, opt => opt.MapFrom(src => src.Service.Duration))
-                .ForMember(dest => dest.DateTime, opt => opt.MapFrom(src => src.DateTime));
+                .ForMember(dest => dest.Duration, opt => opt.MapFrom(src => src.Service.Duration));
 
             CreateMap<Booking, BookingDetailDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.DateTime, opt => opt.MapFrom(src => src.DateTime))
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+                .ForMember(dest => dest.ServiceId, opt => opt.MapFrom(src => src.ServiceId))
                 .ForMember(dest => dest.ServiceName, opt => opt.MapFrom(src => src.Service.Name))
-                .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Service.Description))
+                .ForMember(dest => dest.ServiceDescription, opt => opt.MapFrom(src => src.Service.Description))
                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Service.Price))
                 .ForMember(dest => dest.Duration, opt => opt.MapFrom(src => src.Service.Duration))
                 .ForMember(dest => dest.BusinessId, opt => opt.MapFrom(src => src.Service.Business.Id))
                 .ForMember(dest => dest.BusinessName, opt => opt.MapFrom(src => src.Service.Business.Name))
+                .ForMember(dest => dest.BusinessPhone, opt => opt.MapFrom(src => src.Service.Business.Phone))
+                .ForMember(dest => dest.BusinessEmail, opt => opt.MapFrom(src => src.Service.Business.Email))
+                .ForMember(dest => dest.BusinessAddress, opt => opt.MapFrom(src => src.Service.Business.Address))
                 .ForMember(dest => dest.EmployeeName, opt => opt.MapFrom(src => src.Service.Employee.Name))
+                .ForMember(dest => dest.EmployeeAvatarUrl, opt => opt.MapFrom(src => src.Service.Employee.AvatarUrl))
                 .ForMember(dest => dest.ClientName, opt => opt.MapFrom(src => src.User.Name))
-                .ForMember(dest => dest.DateTime, opt => opt.MapFrom(src => src.DateTime))
-                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt));
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.CreatedAt))
+                .ForMember(dest => dest.BusinessImage, opt => opt.MapFrom(src => src.Service.Business.Images.FirstOrDefault(i => i.IsPrimary)));
 
             CreateMap<BookingCreateDto, Booking>();
             CreateMap<BookingUpdateDto, Booking>();

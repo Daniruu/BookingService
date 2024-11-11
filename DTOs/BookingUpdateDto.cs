@@ -6,8 +6,5 @@ namespace BookingService.DTOs
     {
         [Required]
         public DateTimeOffset DateTime { get; set; }
-
-        [Required]
-        public string Status { get; set; }
     }
 }

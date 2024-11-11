@@ -51,6 +51,11 @@ namespace BookingService.Controllers
                 var service = _mapper.Map<Service>(serviceDto);
                 service.BusinessId = businessId;
 
+                service.OrderIndex = (await _context.Services
+                    .Where(s => s.BusinessId == businessId)
+                    .MaxAsync(s => (int?)s.OrderIndex) ?? 0) + 1;
+
+
                 _context.Services.Add(service);
                 await _context.SaveChangesAsync();
 
@@ -73,7 +78,9 @@ namespace BookingService.Controllers
                     return NotFound(new { message = "Nie znaleziono biznesu" });
                 }
 
-                var serviceDtos = _mapper.Map<IEnumerable<ServiceDto>>(business.Services);
+                var services = await _context.Services.Include(s => s.Employee).Where(s => s.BusinessId == business.Id).OrderBy(s => s.Group).ThenBy(s => s.OrderIndex).ToListAsync();
+
+                var serviceDtos = _mapper.Map<IEnumerable<ServiceDto>>(services);
                 return Ok(serviceDtos);
             }
             catch (Exception ex)
@@ -167,6 +174,15 @@ namespace BookingService.Controllers
                 _context.Services.Remove(service);
                 await _context.SaveChangesAsync();
 
+                var services = await _context.Services.Where(s => s.BusinessId == businessId).OrderBy(s => s.OrderIndex).ToListAsync();
+
+                for (int i = 0; i< services.Count; i++)
+                {
+                    services[i].OrderIndex = i + 1;
+                }
+
+                await _context.SaveChangesAsync();
+
                 var isPublished = await _businessValidateService.ValidateBusinessIsPublished(businessId);
 
                 if (!isPublished)
@@ -176,6 +192,52 @@ namespace BookingService.Controllers
                 }
 
                 return Ok(new { message = "Usługa została usunięta " });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Błąd serwera", details = ex.Message });
+            }
+        }
+
+        [HttpPatch("update-service-order")]
+        [Authorize]
+        public async Task<IActionResult> UpdateServiceOrder(int businessId, [FromBody] List<ServiceOrderUpdateDto> serviceOrderUpdates)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var userId = _userService.GetUserId(User);
+                if (userId == null)
+                {
+                    return Unauthorized(new { message = "Użytkownik nieautoryzowany" });
+                }
+
+                if (!await _userService.IsOwnerOrAdminAsync(userId.Value, businessId))
+                {
+                    return Forbid();
+                }
+
+                var serviceIds = serviceOrderUpdates.Select(s => s.ServiceId).ToList();
+                var services = await _context.Services
+                    .Where(s => serviceIds.Contains(s.Id))
+                    .ToListAsync();
+
+                foreach (var update in serviceOrderUpdates)
+                {
+                    var service = services.FirstOrDefault(s => s.Id == update.ServiceId);
+                    if (service != null)
+                    {
+                        service.OrderIndex = update.NewOrderIndex;
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Zmieniono kolejność usług" });
             }
             catch (Exception ex)
             {

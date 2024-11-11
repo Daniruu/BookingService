@@ -3,6 +3,7 @@ using System;
 using BookingService.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BookingService.Migrations
 {
     [DbContext(typeof(BookingServiceDbContext))]
-    partial class BookingServiceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241105165146_AddOrderIndexToService")]
+    partial class AddOrderIndexToService
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,7 +57,7 @@ namespace BookingService.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Bookings", (string)null);
+                    b.ToTable("Bookings");
                 });
 
             modelBuilder.Entity("BookingService.Models.Business", b =>
@@ -104,7 +107,7 @@ namespace BookingService.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Businesses", (string)null);
+                    b.ToTable("Businesses");
                 });
 
             modelBuilder.Entity("BookingService.Models.BusinessImage", b =>
@@ -129,7 +132,7 @@ namespace BookingService.Migrations
 
                     b.HasIndex("BusinessId");
 
-                    b.ToTable("BusinessImages", (string)null);
+                    b.ToTable("BusinessImages");
                 });
 
             modelBuilder.Entity("BookingService.Models.Employee", b =>
@@ -166,7 +169,7 @@ namespace BookingService.Migrations
 
                     b.HasIndex("BusinessId");
 
-                    b.ToTable("Employees", (string)null);
+                    b.ToTable("Employees");
                 });
 
             modelBuilder.Entity("BookingService.Models.Service", b =>
@@ -213,7 +216,7 @@ namespace BookingService.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("Services", (string)null);
+                    b.ToTable("Services");
                 });
 
             modelBuilder.Entity("BookingService.Models.User", b =>
@@ -258,7 +261,7 @@ namespace BookingService.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("BookingService.Models.WorkingHours", b =>
@@ -291,7 +294,7 @@ namespace BookingService.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("WorkingHours", (string)null);
+                    b.ToTable("WorkingHours");
                 });
 
             modelBuilder.Entity("BookingService.Models.Booking", b =>
@@ -315,7 +318,7 @@ namespace BookingService.Migrations
 
             modelBuilder.Entity("BookingService.Models.Business", b =>
                 {
-                    b.OwnsOne("BookingService.Models.Business.Address#BookingService.Models.Address", "Address", b1 =>
+                    b.OwnsOne("BookingService.Models.Address", "Address", b1 =>
                         {
                             b1.Property<int>("BusinessId")
                                 .HasColumnType("integer");
@@ -345,7 +348,7 @@ namespace BookingService.Migrations
 
                             b1.HasKey("BusinessId");
 
-                            b1.ToTable("Businesses", (string)null);
+                            b1.ToTable("Businesses");
 
                             b1.WithOwner()
                                 .HasForeignKey("BusinessId");

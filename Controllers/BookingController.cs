@@ -6,6 +6,7 @@ using BookingService.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace BookingService.Controllers
 {
@@ -62,7 +63,7 @@ namespace BookingService.Controllers
                 
                 var conflictingBooking = await _context.Bookings
                     .Include(b => b.Service)
-                    .Where(b => b.Service.EmployeeId == employee.Id && b.Status == "confirmed")
+                    .Where(b => b.Service.EmployeeId == employee.Id && b.Status == "pending")
                     .FirstOrDefaultAsync(b =>
                         (b.DateTime <= utcDateTime && utcDateTime < b.DateTime.AddMinutes(b.Service.Duration)) ||
                         (utcDateTime <= b.DateTime && b.DateTime < utcDateTime.AddMinutes(service.Duration)));
@@ -76,7 +77,7 @@ namespace BookingService.Controllers
                 booking.UserId = user.Id;
                 booking.CreatedAt = DateTimeOffset.UtcNow;
                 booking.Status = "pending";
-                booking.DateTime = bookingCreateDto.DateTime.ToUniversalTime();
+                booking.DateTime = utcDateTime;
 
                 _context.Bookings.Add(booking);
                 await _context.SaveChangesAsync();
@@ -91,7 +92,8 @@ namespace BookingService.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetBookingById(int id)
+        [Authorize]
+        public async Task<IActionResult> GetBookingDetail(int id)
         {
             try
             {
@@ -102,6 +104,7 @@ namespace BookingService.Controllers
                         .ThenInclude(s => s.Employee)
                     .Include(b => b.Service)
                         .ThenInclude(s => s.Business)
+                            .ThenInclude(b => b.Images)
                     .Include(b => b.User)
                     .FirstOrDefaultAsync(b => b.Id == id);
 
@@ -171,7 +174,7 @@ namespace BookingService.Controllers
 
                 var conflictingBooking = await _context.Bookings
                     .Include(b => b.Service)
-                    .Where(b => b.Service.EmployeeId == employee.Id && b.Status == "confirmed")
+                    .Where(b => b.Service.EmployeeId == employee.Id && b.Status == "pending")
                     .FirstOrDefaultAsync(b =>
                         (b.DateTime <= utcDateTime && utcDateTime < b.DateTime.AddMinutes(b.Service.Duration)) ||
                         (utcDateTime <= b.DateTime && b.DateTime < utcDateTime.AddMinutes(service.Duration)));
@@ -182,9 +185,14 @@ namespace BookingService.Controllers
                 }
 
                 _mapper.Map(bookingUpdateDto, booking);
+                booking.DateTime = utcDateTime;
                 await _context.SaveChangesAsync();
 
                 return Ok(new { message = "Rezerwacja zaktualizowana" });
+            }
+            catch (DbUpdateException ex)
+            {
+                return StatusCode(500, new { message = "Błąd bazy danych", details = ex.InnerException?.Message ?? ex.Message });
             }
             catch (Exception ex)
             {
