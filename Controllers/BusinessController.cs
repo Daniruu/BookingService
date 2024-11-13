@@ -303,6 +303,7 @@ namespace BookingService.Controllers
 
                 var bookings = await _context.Bookings
                     .Include(b => b.Service)
+                    .ThenInclude(s => s.Employee)
                     .ThenInclude(s => s.Business)
                     .Where(b => b.Service.BusinessId == business.Id)
                     .ToListAsync();

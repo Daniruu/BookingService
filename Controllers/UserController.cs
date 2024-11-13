@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using BookingService.Services;
+using AutoMapper.QueryableExtensions;
 
 namespace BookingService.Controllers
 {
@@ -33,7 +34,7 @@ namespace BookingService.Controllers
             try
             {
                 var userId = _userService.GetUserId(User);
-                if(userId == null)
+                if (userId == null)
                 {
                     return Unauthorized(new { message = "Użytkownik nieautoryzowany" });
                 }
@@ -142,7 +143,7 @@ namespace BookingService.Controllers
                     return NotFound(new { message = "Nie znaleziono użytkownika" });
                 }
 
-                if (user.Email != userUpdateDto.Email &&  await _context.Users.AnyAsync(u => u.Email == userUpdateDto.Email))
+                if (user.Email != userUpdateDto.Email && await _context.Users.AnyAsync(u => u.Email == userUpdateDto.Email))
                 {
                     return BadRequest(new { message = "Użytkownik z takim adresem Email już istnieje" });
                 }
@@ -266,6 +267,151 @@ namespace BookingService.Controllers
                 await _context.SaveChangesAsync();
 
                 return Ok(new { message = "Zdjęcie profilu zostało usunięte" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Błąd serwera", details = ex.Message });
+            }
+        }
+
+        [HttpGet("favorites")]
+        [Authorize]
+        public async Task<IActionResult> GetFavoriteBusinesses()
+        {
+            try
+            {
+                var userId = _userService.GetUserId(User);
+                if (userId == null)
+                {
+                    return Unauthorized(new { message = "Użytkownik nieautoryzowany" });
+                }
+
+                var user = await _context.Users.FindAsync(userId);
+                if (user == null)
+                {
+                    return NotFound(new { message = "Nie znaleziono użytkownika" });
+                }
+
+                var favoriteBusinesses = await _context.UserFavorites
+                    .Where(uf => uf.UserId == userId)
+                    .Include(uf => uf.Business.Images)
+                    .Select(uf => uf.Business)
+                    .ToListAsync();
+
+                var favoriteBusinessesDtos = _mapper.Map<List<FavoriteBusinessDto>>(favoriteBusinesses);
+
+                return Ok(favoriteBusinessesDtos);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Błąd serwera", details = ex.Message });
+            }
+        }
+
+        [HttpGet("favorites/{businessId}/exists")]
+        [Authorize]
+        public async Task<IActionResult> IsBusinessFacorite(int businessId)
+        {
+            try
+            {
+                var userId = _userService.GetUserId(User);
+                if (userId == null)
+                {
+                    return Unauthorized(new { message = "Użytkownik nieautoryzowany" });
+                }
+
+                var user = await _context.Users.FindAsync(userId);
+                if (user == null)
+                {
+                    return NotFound(new { message = "Nie znaleziono użytkownika" });
+                }
+
+                var isFavorite = await _context.UserFavorites.AnyAsync(uf => uf.UserId == userId && uf.BusinessId == businessId);
+
+                return Ok(isFavorite);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Błąd serwera", details = ex.Message });
+            }
+        }
+
+        [HttpPost("favorites/{businessId}")]
+        [Authorize]
+        public async Task<IActionResult> AddToFavorites(int businessId)
+        {
+            try
+            {
+                var userId = _userService.GetUserId(User);
+                if (userId == null)
+                {
+                    return Unauthorized(new { message = "Użytkownik nieautoryzowany" });
+                }
+
+                var user = await _context.Users.FindAsync(userId);
+                if (user == null)
+                {
+                    return NotFound(new { message = "Nie znaleziono użytkownika" });
+                }
+
+                var business = await _context.Businesses.FindAsync(businessId);
+                if (business == null)
+                {
+                    return NotFound(new { message = "Nie znaleziono biznesu" });
+                }
+
+                var exitingFavorite = await _context.UserFavorites.AnyAsync(uf => uf.UserId == userId && uf.BusinessId == businessId);
+                if (exitingFavorite)
+                {
+                    return BadRequest(new { message = "Ten biznes już dodany do ulubionych" });
+                }
+
+                var userFavorite = new UserFavorite
+                {
+                    UserId = userId.Value,
+                    BusinessId = businessId,
+                };
+
+                _context.UserFavorites.Add(userFavorite);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Biznes dodany do ulubionych" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Błąd serwera", details = ex.Message });
+            }
+        }
+
+        [HttpDelete("favorites/{businessId}")]
+        [Authorize]
+        public async Task<IActionResult> RemoveFromFavorites(int businessId)
+        {
+            try
+            {
+                var userId = _userService.GetUserId(User);
+                if (userId == null)
+                {
+                    return Unauthorized(new { message = "Użytkownik nieautoryzowany" });
+                }
+
+                var user = await _context.Users.FindAsync(userId);
+                if (user == null)
+                {
+                    return NotFound(new { message = "Nie znaleziono użytkownika" });
+                }
+
+                var userFavorite = await _context.UserFavorites.FirstOrDefaultAsync(uf => uf.UserId == userId && uf.BusinessId == businessId);
+
+                if (userFavorite == null)
+                {
+                    return NotFound(new { message = "Nie znaleziono biznes w ulubionych" });
+                }
+
+                _context.UserFavorites.Remove(userFavorite);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Biznes usunięty z ulubionych" });
             }
             catch (Exception ex)
             {

@@ -10,6 +10,7 @@
         public string? AvatarUrl { get; set; }
         public string Role { get; set; } // 'admin', 'user', 'owner'
         public List<Booking> Bookings { get; set; }
+        public List<UserFavorite> UserFavorites { get; set; }
         public string? RefreshToken { get; set; }
         public DateTime RefreshExpiryTime { get; set; }
     }

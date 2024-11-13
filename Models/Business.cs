@@ -16,7 +16,8 @@
         public List<WorkingHours> WorkingHours { get; set; }
         public List<Service> Services { get; set; }
         public List<Employee> Employees { get; set; }
-        public ICollection<BusinessImage> Images { get; set; }
+        public List<BusinessImage> Images { get; set; }
         public bool IsPublished { get; set; } = false;
+        public List<UserFavorite> UserFavorites { get; set; }
     }
 }

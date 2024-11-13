@@ -37,6 +37,13 @@ namespace BookingService.MappingProfiles
 
             CreateMap<Business, BusinessDetailDto>();
 
+            CreateMap<Business, FavoriteBusinessDto>()
+                .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
+                .ForMember(dest => dest.Name, opt => opt.MapFrom(src => src.Name))
+                .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category))
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.Address))
+                .ForMember(dest => dest.PrimaryImage, opt => opt.MapFrom(src => src.Images.FirstOrDefault(i => i.IsPrimary)));
+
             CreateMap<BusinessImage, BusinessImageDto>();
 
             CreateMap<WorkingHoursUpdateDto, WorkingHours>();
@@ -57,7 +64,10 @@ namespace BookingService.MappingProfiles
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.DateTime, opt => opt.MapFrom(src => src.DateTime))
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+                .ForMember(dest => dest.ServiceId, opt => opt.MapFrom(src => src.Service.Id))
                 .ForMember(dest => dest.ServiceName, opt => opt.MapFrom(src => src.Service.Name))
+                .ForMember(dest => dest.ServiceDuration, opt => opt.MapFrom(src => src.Service.Duration))
+                .ForMember(dest => dest.EmployeeId, opt => opt.MapFrom(src => src.Service.Employee.Id))
                 .ForMember(dest => dest.EmployeeName, opt => opt.MapFrom(src => src.Service.Employee.Name))
                 .ForMember(dest => dest.Price, opt => opt.MapFrom(src => src.Service.Price))
                 .ForMember(dest => dest.Duration, opt => opt.MapFrom(src => src.Service.Duration));

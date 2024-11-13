@@ -14,6 +14,7 @@ namespace BookingService.Data
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<WorkingHours> WorkingHours { get; set; }
         public DbSet<BusinessImage> BusinessImages { get; set; }
+        public DbSet<UserFavorite> UserFavorites { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -49,6 +50,10 @@ namespace BookingService.Data
                 .WithMany(u => u.Bookings)
                 .HasForeignKey(b => b.UserId);
 
+            modelBuilder.Entity<Booking>()
+                .Property(b => b.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
             // WorkingHours
             modelBuilder.Entity<WorkingHours>()
                 .HasOne(wh => wh.Business)
@@ -62,10 +67,21 @@ namespace BookingService.Data
                 .HasForeignKey(wh => wh.EmployeeId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // CreatedAt
-            modelBuilder.Entity<Booking>()
-                .Property(b => b.CreatedAt)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP");
+            modelBuilder.Entity<UserFavorite>()
+                .HasIndex(uf => new { uf.UserId, uf.BusinessId })
+                .IsUnique();
+
+            modelBuilder.Entity<UserFavorite>()
+                .HasOne(uf => uf.User)
+                .WithMany(u => u.UserFavorites)
+                .HasForeignKey(uf => uf.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<UserFavorite>()
+                .HasOne(uf => uf.Business)
+                .WithMany(b => b.UserFavorites)
+                .HasForeignKey(uf => uf.BusinessId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

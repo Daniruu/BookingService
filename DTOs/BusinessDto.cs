@@ -15,6 +15,6 @@ namespace BookingService.DTOs
         public string? Krs { get; set; }
         public Address Address { get; set; }
         public BusinessImageDto PrimaryImage { get; set; }
-        public  bool IsPublished { get; set; }
+        public bool IsPublished { get; set; }
     }
 }
