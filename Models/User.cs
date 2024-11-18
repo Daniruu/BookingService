@@ -13,5 +13,6 @@
         public List<UserFavorite> UserFavorites { get; set; }
         public string? RefreshToken { get; set; }
         public DateTime RefreshExpiryTime { get; set; }
+        public List<Review> Reviews { get; set; }
     }
 }

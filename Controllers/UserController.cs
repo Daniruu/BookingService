@@ -310,7 +310,7 @@ namespace BookingService.Controllers
 
         [HttpGet("favorites/{businessId}/exists")]
         [Authorize]
-        public async Task<IActionResult> IsBusinessFacorite(int businessId)
+        public async Task<IActionResult> IsBusinessFavorite(int businessId)
         {
             try
             {
@@ -412,6 +412,30 @@ namespace BookingService.Controllers
                 await _context.SaveChangesAsync();
 
                 return Ok(new { message = "Biznes usunięty z ulubionych" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Błąd serwera", details = ex.Message });
+            }
+        }
+
+        [HttpGet("reviews")]
+        [Authorize]
+        public async Task<IActionResult> GetUserReviews()
+        {
+            try
+            {
+                var userId = _userService.GetUserId(User);
+                if (userId == null)
+                {
+                    return Unauthorized(new { message = "Użytkownik nieautoryzowany" });
+                }
+
+                var reviews = _context.Reviews.Where(r => r.UserId == userId).Include(r => r.Business).ToList();
+
+                var reviewDtos = _mapper.Map<List<UserReviewDto>>(reviews);
+
+                return Ok(reviews);
             }
             catch (Exception ex)
             {

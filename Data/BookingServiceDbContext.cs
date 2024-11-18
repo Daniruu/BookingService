@@ -15,6 +15,7 @@ namespace BookingService.Data
         public DbSet<WorkingHours> WorkingHours { get; set; }
         public DbSet<BusinessImage> BusinessImages { get; set; }
         public DbSet<UserFavorite> UserFavorites { get; set; }
+        public DbSet<Review> Reviews { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -82,6 +83,16 @@ namespace BookingService.Data
                 .WithMany(b => b.UserFavorites)
                 .HasForeignKey(uf => uf.BusinessId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Review>()
+                .HasOne(r => r.Business)
+                .WithMany(b => b.Reviews)
+                .HasForeignKey(r => r.BusinessId);
+
+            modelBuilder.Entity<Review>()
+                .HasOne(r => r.User)
+                .WithMany(u => u.Reviews)
+                .HasForeignKey(u => u.UserId);
         }
     }
 }

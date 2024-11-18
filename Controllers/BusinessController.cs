@@ -557,5 +557,97 @@ namespace BookingService.Controllers
                 return StatusCode(500, new { message = "Błąd serwera", details = ex.Message });
             }
         }
+
+        [HttpPost("{businessId}/reviews")]
+        [Authorize]
+        public async Task<IActionResult> AddReview(int businessId, [FromBody] AddReviewDto reviewDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                var userId = _userService.GetUserId(User);
+                if (userId == null)
+                {
+                    return Unauthorized(new { message = "Użytkownik nieautoryzowany" });
+                }
+
+                var business = await _context.Businesses.FindAsync(businessId);
+                if (business == null)
+                {
+                    return NotFound(new { message = "Nie znaleziono biznesu" });
+                }
+
+                var review = _mapper.Map<Review>(reviewDto);
+                review.UserId = userId.Value;
+                review.BusinessId = businessId;
+                review.CreatedAt = DateTime.UtcNow;
+
+                _context.Reviews.Add(review);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Twoja opinia została dodana" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Błąd serwera", details = ex.Message });
+            }
+        }
+
+        [HttpGet("{businessId}/reviews")]
+        public async Task<IActionResult> GetBusinessReviews(int businessId)
+        {
+            try
+            {
+                var business = await _context.Businesses.FindAsync(businessId);
+
+                if (business == null)
+                {
+                    return NotFound(new { message = "Nie znaleziono biznesu" });
+                }
+
+                var reviews = _context.Reviews.Where(r => r.BusinessId == businessId).Include(r => r.User).ToList();
+
+                var reviewDtos = _mapper.Map<List<BusinessReviewDto>>(reviews);
+
+                return Ok(reviewDtos);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Błąd serwera", details = ex.Message });
+            }
+        }
+
+        [HttpGet("{businessId}/reviews/exists")]
+        [Authorize]
+        public async Task<IActionResult> CheckUserReview(int businessId)
+        {
+            try
+            {
+
+                var userId = _userService.GetUserId(User);
+                if (userId == null)
+                {
+                    return Unauthorized(new { message = "Użytkownik nieautoryzowany" });
+                }
+
+                var business = await _context.Businesses.FindAsync(businessId);
+                if (business == null)
+                {
+                    return NotFound(new { message = "Nie znaleziono biznesu" });
+                }
+
+                var hasReviewed = await _context.Reviews.AnyAsync(r => r.BusinessId == businessId && r.UserId == userId.Value);
+
+                return Ok(hasReviewed);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Błąd serwera", details = ex.Message });
+            }
+        }
     }
 }

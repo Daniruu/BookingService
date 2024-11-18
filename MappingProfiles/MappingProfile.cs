@@ -94,7 +94,14 @@ namespace BookingService.MappingProfiles
 
             CreateMap<BookingCreateDto, Booking>();
             CreateMap<BookingUpdateDto, Booking>();
-            
+
+            CreateMap<Review, BusinessReviewDto>();
+            CreateMap<AddReviewDto, Review>()
+                .ForMember(dest => dest.UserId, opt => opt.Ignore());
+
+            CreateMap<Review, UserReviewDto>()
+                .ForMember(dest => dest.BusinessName, opt => opt.MapFrom(src => src.Business.Name))
+                .ForMember(dest => dest.BusinessImage, opt => opt.MapFrom(src => src.Business.Images.FirstOrDefault(i => i.IsPrimary)));
         }
     }
 }
