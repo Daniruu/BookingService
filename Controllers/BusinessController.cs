@@ -589,6 +589,9 @@ namespace BookingService.Controllers
                 _context.Reviews.Add(review);
                 await _context.SaveChangesAsync();
 
+                await UpdateAverageRating(businessId);
+                await UpdateReviewCount(businessId);
+
                 return Ok(new { message = "Twoja opinia została dodana" });
             }
             catch (Exception ex)
@@ -647,6 +650,58 @@ namespace BookingService.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, new { message = "Błąd serwera", details = ex.Message });
+            }
+        }
+
+        [HttpGet("{businessId}/reviews/has-access")]
+        [Authorize]
+        public async Task<IActionResult> CheckAccessToReview(int businessId)
+        {
+            try
+            {
+                var userId = _userService.GetUserId(User);
+                if (userId == null)
+                {
+                    return Unauthorized(new { message = "Użytkownik nieautoryzowany" });
+                }
+                var business = await _context.Businesses.FindAsync(businessId);
+                if (business == null)
+                {
+                    return NotFound(new { message = "Nie znaleziono biznesu" });
+                }
+
+                var hasAccessToReview = await _context.Bookings
+                    .Include(b => b.Service)
+                    .Where(b => b.UserId == userId.Value && b.Service.BusinessId == businessId && b.Status == "completed")
+                    .AnyAsync();
+
+                return Ok(hasAccessToReview);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Błąd serwera", details = ex.Message });
+            }
+        }
+
+        private async Task UpdateAverageRating(int businessId)
+        {
+            var business = await _context.Businesses.Include(b => b.Reviews).FirstOrDefaultAsync(b => b.Id == businessId);
+            
+            if (business != null)
+            {
+                business.AverageRating = business.Reviews.Any() ? business.Reviews.Average(r => r.Rating) : 0;
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        private async Task UpdateReviewCount(int businessId)
+        {
+            var business = await _context.Businesses.Include(b => b.Reviews).FirstOrDefaultAsync(b => b.Id == businessId);
+
+            if (business != null)
+            {
+                business.ReviewCount = business.Reviews.Count;
+                await _context.SaveChangesAsync();
             }
         }
     }

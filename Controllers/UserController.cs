@@ -431,11 +431,15 @@ namespace BookingService.Controllers
                     return Unauthorized(new { message = "Użytkownik nieautoryzowany" });
                 }
 
-                var reviews = _context.Reviews.Where(r => r.UserId == userId).Include(r => r.Business).ToList();
+                var reviews = await _context.Reviews
+                    .Where(r => r.UserId == userId)
+                    .Include(r => r.Business)
+                        .ThenInclude(b => b.Images)
+                    .ToListAsync();
 
                 var reviewDtos = _mapper.Map<List<UserReviewDto>>(reviews);
 
-                return Ok(reviews);
+                return Ok(reviewDtos);
             }
             catch (Exception ex)
             {

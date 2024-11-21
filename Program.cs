@@ -47,6 +47,8 @@ namespace BookingService
 
             builder.Services.AddAutoMapper(typeof(Program));
 
+            builder.Services.AddHostedService(sp => new BookingStatusUpdaterService("Host=localhost;Database=BookingServiceDb;Username=postgres;Password=8DA357ae"));
+
             builder.Services.AddScoped<UserService>();
 
             builder.Services.AddScoped<BusinessValidationService>();

@@ -20,5 +20,7 @@
         public bool IsPublished { get; set; } = false;
         public List<UserFavorite> UserFavorites { get; set; }
         public List<Review> Reviews { get; set; }
+        public double AverageRating { get; set; }
+        public int ReviewCount { get; set; }
     }
 }

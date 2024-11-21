@@ -10,5 +10,7 @@ namespace BookingService.DTOs
         public Address Address { get; set; }
         public BusinessImageDto PrimaryImage { get; set; }
         public IEnumerable<ServiceDto> FeaturedServices { get; set; }
+        public double AverageRating { get; set; }
+        public int ReviewCount { get; set; }
     }
 }

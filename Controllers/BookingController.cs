@@ -65,8 +65,8 @@ namespace BookingService.Controllers
                     .Include(b => b.Service)
                     .Where(b => b.Service.EmployeeId == employee.Id && b.Status == "pending")
                     .FirstOrDefaultAsync(b =>
-                        (b.DateTime <= utcDateTime && utcDateTime < b.DateTime.AddMinutes(b.Service.Duration)) ||
-                        (utcDateTime <= b.DateTime && b.DateTime < utcDateTime.AddMinutes(service.Duration)));
+                        (b.StartTime <= utcDateTime && utcDateTime < b.EndTime) ||
+                        (utcDateTime <= b.StartTime && b.StartTime < utcDateTime.AddMinutes(service.Duration)));
 
                 if (conflictingBooking != null)
                 {
@@ -77,12 +77,12 @@ namespace BookingService.Controllers
                 booking.UserId = user.Id;
                 booking.CreatedAt = DateTimeOffset.UtcNow;
                 booking.Status = "pending";
-                booking.DateTime = utcDateTime;
+                booking.StartTime = utcDateTime;
+                booking.EndTime = utcDateTime.AddMinutes(service.Duration);
 
                 _context.Bookings.Add(booking);
                 await _context.SaveChangesAsync();
 
-                var bookingDetailDto = _mapper.Map<BookingDetailDto>(booking);
                 return Ok(new { message = "Usługa została zarezerwowana" });
             }
             catch (Exception ex)
@@ -176,8 +176,8 @@ namespace BookingService.Controllers
                     .Include(b => b.Service)
                     .Where(b => b.Service.EmployeeId == employee.Id && b.Status == "pending")
                     .FirstOrDefaultAsync(b =>
-                        (b.DateTime <= utcDateTime && utcDateTime < b.DateTime.AddMinutes(b.Service.Duration)) ||
-                        (utcDateTime <= b.DateTime && b.DateTime < utcDateTime.AddMinutes(service.Duration)));
+                        (b.StartTime <= utcDateTime && utcDateTime < b.EndTime) ||
+                        (utcDateTime <= b.StartTime && b.StartTime < utcDateTime.AddMinutes(service.Duration)));
 
                 if (conflictingBooking != null)
                 {
@@ -185,7 +185,8 @@ namespace BookingService.Controllers
                 }
 
                 _mapper.Map(bookingUpdateDto, booking);
-                booking.DateTime = utcDateTime;
+                booking.StartTime = utcDateTime;
+                booking.EndTime = utcDateTime.AddMinutes(service.Duration);
                 await _context.SaveChangesAsync();
 
                 return Ok(new { message = "Rezerwacja zaktualizowana" });
@@ -268,7 +269,7 @@ namespace BookingService.Controllers
                 var workingStart = businessWorkingHours.Start;
                 var workingEnd = businessWorkingHours.End;
 
-                var exitingBookings = await _context.Bookings.Where(b => b.Service.EmployeeId == employee.Id && b.DateTime.Date == dateTime.Date && b.Status == "pending").Include(b => b.Service).ToListAsync();
+                var exitingBookings = await _context.Bookings.Where(b => b.Service.EmployeeId == employee.Id && b.StartTime.Date == dateTime.Date && b.Status == "pending").Include(b => b.Service).ToListAsync();
 
                 var serviceDuration = TimeSpan.FromMinutes(service.Duration);
                 var interval = TimeSpan.FromMinutes(15);
@@ -280,8 +281,8 @@ namespace BookingService.Controllers
                 {
                     var isSlotAvailable = !exitingBookings.Any(b =>
                         (
-                            (b.DateTime <= currentTimeSlot && currentTimeSlot < b.DateTime.AddMinutes(b.Service.Duration)) ||
-                            (currentTimeSlot <= b.DateTime && b.DateTime < currentTimeSlot.Add(serviceDuration))
+                            (b.StartTime <= currentTimeSlot && currentTimeSlot < b.StartTime.AddMinutes(b.Service.Duration)) ||
+                            (currentTimeSlot <= b.StartTime && b.StartTime < currentTimeSlot.Add(serviceDuration))
                         )
                     );
 

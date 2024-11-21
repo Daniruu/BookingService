@@ -7,6 +7,6 @@
         public string Comment { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
         public string BusinessName { get; set; }
-        public string? BusinessImage { get; set; }
+        public string? BusinessImageUrl { get; set; }
     }
 }

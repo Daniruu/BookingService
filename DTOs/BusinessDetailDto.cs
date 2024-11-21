@@ -18,5 +18,7 @@ namespace BookingService.DTOs
         public IEnumerable<WorkingHoursDto> WorkingHours { get; set; }
         public IEnumerable<EmployeeDto> Employees { get; set; }
         public IEnumerable<ServiceDto> Services { get; set; }
+        public double AverageRating { get; set; }
+        public int ReviewCount { get; set; }
     }
 }

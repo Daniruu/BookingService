@@ -7,8 +7,9 @@
         public User User { get; set; }
         public int ServiceId { get; set; }
         public Service Service { get; set; }
-        public DateTimeOffset DateTime { get; set; }
-        public string Status { get; set; } // 'pending', 'canceled', 'completed'
+        public DateTimeOffset StartTime { get; set; }
+        public DateTimeOffset EndTime { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
+        public string Status { get; set; } // 'pending', 'canceled', 'completed'
     }
 }

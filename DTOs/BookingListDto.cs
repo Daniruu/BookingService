@@ -5,7 +5,8 @@ namespace BookingService.DTOs
     public class BookingListDto
     {
         public int Id { get; set; }
-        public DateTimeOffset DateTime { get; set; }
+        public DateTimeOffset StartTime { get; set; }
+        public DateTimeOffset EndTime { get; set; }
         public string Status { get; set; }
         public int ServiceId { get; set; }
         public string ServiceName { get; set; }

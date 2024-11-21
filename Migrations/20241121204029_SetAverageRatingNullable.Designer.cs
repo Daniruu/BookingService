@@ -3,6 +3,7 @@ using System;
 using BookingService.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BookingService.Migrations
 {
     [DbContext(typeof(BookingServiceDbContext))]
-    partial class BookingServiceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241121204029_SetAverageRatingNullable")]
+    partial class SetAverageRatingNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -68,7 +71,7 @@ namespace BookingService.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<double>("AverageRating")
+                    b.Property<double?>("AverageRating")
                         .HasColumnType("double precision");
 
                     b.Property<string>("Category")
@@ -104,9 +107,6 @@ namespace BookingService.Migrations
                     b.Property<string>("Regon")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<int>("ReviewCount")
-                        .HasColumnType("integer");
 
                     b.Property<int>("UserId")
                         .HasColumnType("integer");

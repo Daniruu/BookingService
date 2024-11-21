@@ -1,4 +1,6 @@
-﻿namespace BookingService.Models
+﻿using System.Text.Json.Serialization;
+
+namespace BookingService.Models
 {
     public class Review
     {

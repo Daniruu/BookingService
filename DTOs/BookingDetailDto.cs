@@ -3,9 +3,10 @@
     public class BookingDetailDto
     {
         public int Id { get; set; }
-        public DateTimeOffset DateTime { get; set; }
-        public string Status { get; set; }
+        public DateTimeOffset StartTime { get; set; }
+        public DateTimeOffset EndTime { get; set; }
         public DateTimeOffset CreatedAt { get; set; }
+        public string Status { get; set; }
         public int ServiceId { get; set; }
         public string ServiceName { get; set; }
         public string ServiceDescription { get; set; }
