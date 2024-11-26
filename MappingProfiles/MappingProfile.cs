@@ -14,7 +14,9 @@ namespace BookingService.MappingProfiles
                 .ForMember(dest => dest.Role, opt => opt.MapFrom(src => Roles.User));
 
             CreateMap<User, UserDto>();
-            CreateMap<UserUpdateDto, User>();
+            CreateMap<UserUpdateDto, User>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.PasswordHash, opt => opt.Ignore());
 
             CreateMap<BusinessCreateDto, Business>();
             CreateMap<BusinessUpdateDto, Business>();

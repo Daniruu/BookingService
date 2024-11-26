@@ -13,29 +13,25 @@ namespace BookingService.Repositories
             _context = context;
         }
 
-        public async Task<bool> UserExistsAsync(string email)
-        {
-            return await _context.Users.AnyAsync(u => u.Email == email);
-        }
-
         public async Task<string> CreateUserAsync(User user)
         {
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Users.Add(user);
+                await _context.SaveChangesAsync();
 
-            return user.Id.ToString();
+                return user.Id.ToString();
+            }
+            catch (Exception ex)
+            {
+                if (ex.InnerException?.Message.Contains("UQ_Users.Email") == true)
+                {
+                    throw new Exception("Użytkownik z takim adresem Email już istnieje.");
+                }
+                throw;
+            }
         }
 
-        public async Task<User> GetUserByEmailAsync(string email)
-        {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-        }
-
-        public async Task UpdateUserAsync(User user)
-        {
-            _context.Users.Update(user);
-            await _context.SaveChangesAsync();
-        }
         public async Task<User> GetUserByRefreshTokenAsync(string refreshToken)
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);

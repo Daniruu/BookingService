@@ -15,38 +15,42 @@ namespace BookingService.Services
     public class AuthService : IAuthService
     {
         private readonly IAuthRepository _authRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
 
-        public AuthService(IAuthRepository authRepository, IConfiguration configuration, IMapper mapper)
+        public AuthService(IAuthRepository authRepository, IConfiguration configuration, IMapper mapper, IUserRepository userRepository)
         {
             _authRepository = authRepository;
+            _userRepository = userRepository;
             _configuration = configuration;
             _mapper = mapper;
         }
 
         public async Task<ServiceResult<string>> RegisterAsync(RegisterDto registerDto)
         {
-            if (await _authRepository.UserExistsAsync(registerDto.Email))
+            if (await _userRepository.UserExistsAsync(registerDto.Email))
             {
                 return ServiceResult<string>.Failure("Użytkownik z takim adresem Email już istnieje.");
             }
 
-            var user = _mapper.Map<User>(registerDto);
-
-            var userId = await _authRepository.CreateUserAsync(user);
-
-            if (userId == null)
+            try
             {
-                return ServiceResult<string>.Failure("Nie udało się utworzyć kotna użytkownika.");
-            }
+                var user = _mapper.Map<User>(registerDto);
 
-            return ServiceResult<string>.SuccessResult(userId);
+                var userId = await _authRepository.CreateUserAsync(user);
+
+                return ServiceResult<string>.SuccessResult(userId);
+            }
+            catch (Exception ex)
+            {
+                return ServiceResult<string>.Failure(ex.Message);
+            }
         }
 
         public async Task<ServiceResult<AuthTokenResult>> LoginAsync(LoginDto loginDto)
         {
-            var user = await _authRepository.GetUserByEmailAsync(loginDto.Email);
+            var user = await _userRepository.GetUserByEmailAsync(loginDto.Email);
 
             if (user == null || !VerifyPassword(loginDto.Password, user.PasswordHash))
             {
@@ -58,7 +62,7 @@ namespace BookingService.Services
 
             user.RefreshToken = refreshToken;
             user.RefreshExpiryTime = DateTime.UtcNow.AddDays(7);
-            await _authRepository.UpdateUserAsync(user);
+            await _userRepository.UpdateUserAsync(user);
 
             return ServiceResult<AuthTokenResult>.SuccessResult(new AuthTokenResult
             {
