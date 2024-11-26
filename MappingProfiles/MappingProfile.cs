@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BookingService.Models;
 using BookingService.DTOs;
+using BCrypt.Net;
 
 namespace BookingService.MappingProfiles
 {
@@ -8,6 +9,10 @@ namespace BookingService.MappingProfiles
     {
         public MappingProfile()
         {
+            CreateMap<RegisterDto, User>()
+                .ForMember(dest => dest.PasswordHash, opt => opt.MapFrom(src => BCrypt.Net.BCrypt.HashPassword(src.Password)))
+                .ForMember(dest => dest.Role, opt => opt.MapFrom(src => Roles.User));
+
             CreateMap<User, UserDto>();
             CreateMap<UserUpdateDto, User>();
 

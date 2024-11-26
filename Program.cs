@@ -1,5 +1,6 @@
 
 using BookingService.Data;
+using BookingService.Repositories;
 using BookingService.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -50,6 +51,9 @@ namespace BookingService
             builder.Services.AddScoped<UserService>();
 
             builder.Services.AddScoped<BusinessValidationService>();
+
+            builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
 
             builder.Services.AddAuthentication();
 
