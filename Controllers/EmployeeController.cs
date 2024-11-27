@@ -163,47 +163,47 @@ namespace BookingService.Controllers
             }
         }
 
-        [HttpPost("{id}/upload-avatar")]
-        [Authorize]
-        public async Task<IActionResult> UploadAvatar(int businessId, int id, IFormFile file)
-        {
-            try
-            {
-                var userId = _userService.GetUserId(User);
-                if (userId == null)
-                {
-                    return Unauthorized(new { message = "Użytkownik nieautoryzowany" });
-                }
+        //[HttpPost("{id}/upload-avatar")]
+        //[Authorize]
+        //public async Task<IActionResult> UploadAvatar(int businessId, int id, IFormFile file)
+        //{
+        //    try
+        //    {
+        //        var userId = _userService.GetUserId(User);
+        //        if (userId == null)
+        //        {
+        //            return Unauthorized(new { message = "Użytkownik nieautoryzowany" });
+        //        }
 
-                if (!await _userService.IsOwnerOrAdminAsync(userId.Value, businessId))
-                {
-                    return Forbid();
-                }
+        //        if (!await _userService.IsOwnerOrAdminAsync(userId.Value, businessId))
+        //        {
+        //            return Forbid();
+        //        }
 
-                var employee = await _context.Employees.FindAsync(id);
-                if (employee == null || employee.BusinessId != businessId)
-                {
-                    return NotFound(new { message = "Nie znaleziono pracownika lub nie jest on przypisany do tego biznesu" });
-                }
+        //        var employee = await _context.Employees.FindAsync(id);
+        //        if (employee == null || employee.BusinessId != businessId)
+        //        {
+        //            return NotFound(new { message = "Nie znaleziono pracownika lub nie jest on przypisany do tego biznesu" });
+        //        }
 
-                var googleCloudStorage = new GoogleCloudStorageService();
-                var objectName = $"avatars/{userId}_{file.FileName}";
+        //        var googleCloudStorage = new GoogleCloudStorageService();
+        //        var objectName = $"avatars/{userId}_{file.FileName}";
 
-                using (var stream = file.OpenReadStream())
-                {
-                    var fileUrl = await googleCloudStorage.UploadFileAsync(stream, objectName);
+        //        using (var stream = file.OpenReadStream())
+        //        {
+        //            var fileUrl = await googleCloudStorage.UploadFileAsync(stream, objectName);
 
-                    employee.AvatarUrl = fileUrl;
-                    await _context.SaveChangesAsync();
+        //            employee.AvatarUrl = fileUrl;
+        //            await _context.SaveChangesAsync();
 
-                    return Ok(new { message = "Dodano zdjęcie profilu pracownika", avatarUrl = employee.AvatarUrl });
-                }
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Błąd serwera", details = ex.Message });
-            }
-        }
+        //            return Ok(new { message = "Dodano zdjęcie profilu pracownika", avatarUrl = employee.AvatarUrl });
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, new { message = "Błąd serwera", details = ex.Message });
+        //    }
+        //}
 
         [HttpPut("{id}/working-hours")]
         [Authorize]

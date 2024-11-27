@@ -1,5 +1,6 @@
 
 using BookingService.Data;
+using BookingService.Repositories;
 using BookingService.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -47,11 +48,22 @@ namespace BookingService
 
             builder.Services.AddAutoMapper(typeof(Program));
 
+
+            builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
+
+            builder.Services.AddScoped<IUserRepository, UserRepository>();
+            builder.Services.AddScoped<IUserService, UserService>();
+
+            builder.Services.AddScoped<IBusinessRepository, BusinessRepository>();
+            builder.Services.AddScoped<BusinessValidationService>();
+
+            builder.Services.AddScoped<IBookingRepository, BookingRepository>();
             builder.Services.AddHostedService(sp => new BookingStatusUpdaterService("Host=localhost;Database=BookingServiceDb;Username=postgres;Password=8DA357ae"));
 
-            builder.Services.AddScoped<UserService>();
+            builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 
-            builder.Services.AddScoped<BusinessValidationService>();
+            builder.Services.AddScoped<IGoogleCloudStorageService, GoogleCloudStorageService>();
 
             builder.Services.AddAuthentication();
 

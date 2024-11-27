@@ -317,58 +317,58 @@ namespace BookingService.Controllers
             }
         }
 
-        [HttpPost("{businessId}/upload-image")]
-        [Authorize]
-        public async Task<IActionResult> UploadBusinessImage(int businessId, IFormFile file)
-        {
-            if (file == null || file.Length == 0)
-            {
-                return BadRequest(new { message = "Nie udało się załadować pliku" });
-            }
+        //[HttpPost("{businessId}/upload-image")]
+        //[Authorize]
+        //public async Task<IActionResult> UploadBusinessImage(int businessId, IFormFile file)
+        //{
+        //    if (file == null || file.Length == 0)
+        //    {
+        //        return BadRequest(new { message = "Nie udało się załadować pliku" });
+        //    }
 
-            try
-            {
-                var userId = _userService.GetUserId(User);
-                if (userId == null)
-                {
-                    return Unauthorized(new { message = "Użytkownik nieautoryzowany" });
-                }
+        //    try
+        //    {
+        //        var userId = _userService.GetUserId(User);
+        //        if (userId == null)
+        //        {
+        //            return Unauthorized(new { message = "Użytkownik nieautoryzowany" });
+        //        }
 
-                if (!await _userService.IsOwnerOrAdminAsync(userId.Value, businessId))
-                {
-                    return Forbid();
-                }
+        //        if (!await _userService.IsOwnerOrAdminAsync(userId.Value, businessId))
+        //        {
+        //            return Forbid();
+        //        }
 
-                var business = await _context.Businesses.FirstOrDefaultAsync(b => b.Id == businessId);
-                if (business == null)
-                {
-                    return NotFound(new { message = "Nie znaleziono biznesu" });
-                }
+        //        var business = await _context.Businesses.FirstOrDefaultAsync(b => b.Id == businessId);
+        //        if (business == null)
+        //        {
+        //            return NotFound(new { message = "Nie znaleziono biznesu" });
+        //        }
 
-                var googleCloudStorage = new GoogleCloudStorageService();
-                var objectName = $"businessImages/{businessId}_{file.FileName}";
+        //        var googleCloudStorage = new GoogleCloudStorageService();
+        //        var objectName = $"businessImages/{businessId}_{file.FileName}";
 
-                using (var stream = file.OpenReadStream())
-                {
-                    var fileUrl = await googleCloudStorage.UploadFileAsync(stream, objectName);
+        //        using (var stream = file.OpenReadStream())
+        //        {
+        //            var fileUrl = await googleCloudStorage.UploadFileAsync(stream, objectName);
 
-                    var businessImage = new BusinessImage
-                    {
-                        BusinessId = businessId,
-                        ImageUrl = fileUrl
-                    };
+        //            var businessImage = new BusinessImage
+        //            {
+        //                BusinessId = businessId,
+        //                ImageUrl = fileUrl
+        //            };
 
-                    _context.BusinessImages.Add(businessImage);
-                    await _context.SaveChangesAsync();
+        //            _context.BusinessImages.Add(businessImage);
+        //            await _context.SaveChangesAsync();
 
-                    return Ok(new { message = "Dodano obraz do galerii firmy", imageUrl = businessImage.ImageUrl });
-                }
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Błąd serwera", details = ex.Message });
-            }
-        }
+        //            return Ok(new { message = "Dodano obraz do galerii firmy", imageUrl = businessImage.ImageUrl });
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, new { message = "Błąd serwera", details = ex.Message });
+        //    }
+        //}
 
         [HttpGet("{businessId}/images")]
         public async Task<IActionResult> GetBusinessImages(int businessId)
@@ -447,63 +447,63 @@ namespace BookingService.Controllers
             }
         }
 
-        [HttpDelete("{businessId}/delete-image/{imageId}")]
-        [Authorize]
-        public async Task<IActionResult> DeleteBusinessImage(int businessId, int imageId)
-        {
-            try
-            {
-                var userId = _userService.GetUserId(User);
-                if (userId == null)
-                {
-                    return Unauthorized(new { message = "Użytkownik nieautoryzowany" });
-                }
+        //[HttpDelete("{businessId}/delete-image/{imageId}")]
+        //[Authorize]
+        //public async Task<IActionResult> DeleteBusinessImage(int businessId, int imageId)
+        //{
+        //    try
+        //    {
+        //        var userId = _userService.GetUserId(User);
+        //        if (userId == null)
+        //        {
+        //            return Unauthorized(new { message = "Użytkownik nieautoryzowany" });
+        //        }
 
-                if (!await _userService.IsOwnerOrAdminAsync(userId.Value, businessId))
-                {
-                    return Forbid();
-                }
+        //        if (!await _userService.IsOwnerOrAdminAsync(userId.Value, businessId))
+        //        {
+        //            return Forbid();
+        //        }
 
-                var business = await _context.Businesses
-                    .Include(b => b.Images)
-                    .FirstOrDefaultAsync(b => b.Id == businessId);
+        //        var business = await _context.Businesses
+        //            .Include(b => b.Images)
+        //            .FirstOrDefaultAsync(b => b.Id == businessId);
 
-                if (business == null)
-                {
-                    return NotFound(new { message = "Nie znaleziono biznesu" });
-                }
+        //        if (business == null)
+        //        {
+        //            return NotFound(new { message = "Nie znaleziono biznesu" });
+        //        }
 
-                var image = business.Images.FirstOrDefault(i => i.Id == imageId);
-                if (image == null)
-                {
-                    return NotFound(new { message = "Nie znaleziono pliku" });
-                }
+        //        var image = business.Images.FirstOrDefault(i => i.Id == imageId);
+        //        if (image == null)
+        //        {
+        //            return NotFound(new { message = "Nie znaleziono pliku" });
+        //        }
 
-                var imageUrl = image.ImageUrl;
-                var objectName = imageUrl.Split('/').Last();
-                var googleCloudStorageService = new GoogleCloudStorageService();
+        //        var imageUrl = image.ImageUrl;
+        //        var objectName = imageUrl.Split('/').Last();
+        //        var googleCloudStorageService = new GoogleCloudStorageService();
 
-                await googleCloudStorageService.DeleteFileAsync(objectName);
+        //        await googleCloudStorageService.DeleteFileAsync(objectName);
 
 
-                _context.BusinessImages.Remove(image);
-                await _context.SaveChangesAsync();
+        //        _context.BusinessImages.Remove(image);
+        //        await _context.SaveChangesAsync();
 
-                var isPublished = await _businessValidateService.ValidateBusinessIsPublished(businessId);
+        //        var isPublished = await _businessValidateService.ValidateBusinessIsPublished(businessId);
 
-                if (!isPublished)
-                {
-                    await _businessValidateService.UnpublishBusinessAsync(businessId);
-                    return Ok(new { message = "Zdjęcie zostało usunięte, biznes został niepublikowany" });
-                }
+        //        if (!isPublished)
+        //        {
+        //            await _businessValidateService.UnpublishBusinessAsync(businessId);
+        //            return Ok(new { message = "Zdjęcie zostało usunięte, biznes został niepublikowany" });
+        //        }
 
-                return Ok(new { message = "Zdjęcie profilu zostało usunięte" });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Błąd serwera", details = ex.Message });
-            }
-        }
+        //        return Ok(new { message = "Zdjęcie profilu zostało usunięte" });
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, new { message = "Błąd serwera", details = ex.Message });
+        //    }
+        //}
 
         [HttpPut("{businessId}/toggle-publish")]
         [Authorize]
